@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Upload Form Section -->
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white fw-bold rounded-top-4">
+                    Upload Your Photo
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" class="text-center">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.photo.label_tag }}
+                            {{ form.photo }}
+                        </div>
+                        <div class="mb-3">
+                        {{ form.clothing.label_tag }}
+                        {{ form.clothing }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Upload & Try On</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Uploaded Photos Section -->
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-white fw-bold rounded-top-4">
+                    Your Uploaded Photos
+                </div>
+                <div class="card-body">
+                    {% if uploaded_photos %}
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            {% for photo in uploaded_photos %}
+                                <div class="col">
+                                    <div class="card shadow-sm border-0 h-100 rounded-3">
+                                        <img src="{{ photo.photo.url }}" class="card-img-top rounded-top-3"
+                                             style="object-fit: cover; height: 300px;" alt="Uploaded Photo">
+
+                                        <div class="card-body text-center">
+                                            <p class="text-muted mb-1">Uploaded on {{ photo.created_at|date:"M d, Y" }}</p>
+                                            
+                                            <!-- Try On Button -->
+                                            <a href="{% url 'try_on_styles' photo.id %}" 
+                                               class="btn btn-primary w-100 mt-2">
+                                                <i class="fas fa-tshirt"></i> Try On
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No photos uploaded yet. Upload one to start trying outfits!
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FontAwesome for Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+{% endblock %} 

@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Virtual Try-On Result</h2>
+
+    {% if user_photo %}
+    <!-- Try-On Area -->
+    <div class="d-flex justify-content-center align-items-center flex-column">
+        <div id="tryon-area" class="position-relative border rounded shadow" style="max-width:400px;">
+            <!-- Uploaded Photo -->
+            <img id="model-photo"
+                src="{{ user_photo }}"
+                alt="User Photo"
+                class="img-fluid rounded" />
+
+            <!-- Clothing Overlay -->
+            <img id="overlay-top"
+                src="{% static 'virtual_try_on/clothes/green_top.png' %}"
+                alt="Clothing"
+                class="position-absolute"
+                style="
+                    top: 50px;
+                    left: 50px;
+                    width: 200px;
+                    cursor: move;
+                    transform: rotate(0deg);
+                " />
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-3 text-center">
+            <label for="sizeRange" class="form-label">Resize Clothing</label>
+            <input type="range" id="sizeRange" min="50" max="400" value="200" class="form-range w-75" />
+            
+            <label for="rotateRange" class="form-label mt-3">Rotate Clothing</label>
+            <input type="range" id="rotateRange" min="-180" max="180" value="0" class="form-range w-75" />
+        </div>
+
+        <!-- Download Button -->
+        <div class="mt-4">
+            <button id="downloadBtn" class="btn btn-success btn-lg">
+                Download Try-On Result
+            </button>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center text-danger">No photo uploaded. <a href="{% url 'upload_photo' %}">Upload one here</a>.</p>
+    {% endif %}
+</div>
+
+<!-- Include HTML2Canvas Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    const overlay = document.getElementById('overlay-top');
+    const sizeRange = document.getElementById('sizeRange');
+    const rotateRange = document.getElementById('rotateRange');
+    const tryonArea = document.getElementById('tryon-area');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // Resize clothing
+    sizeRange.addEventListener('input', () => {
+        overlay.style.width = sizeRange.value + 'px';
+    });
+
+    // Rotate clothing
+    rotateRange.addEventListener('input', () => {
+        overlay.style.transform = `rotate(${rotateRange.value}deg)`;
+    });
+
+    // Drag clothing overlay
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    overlay.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.offsetX;
+        offsetY = e.offsetY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const rect = tryonArea.getBoundingClientRect();
+            overlay.style.left = `${e.clientX - rect.left - offsetX}px`;
+            overlay.style.top = `${e.clientY - rect.top - offsetY}px`;
+        }
+    });
+
+    document.addEventListener('mouseup', () => isDragging = false);
+
+    // Download final try-on result
+    downloadBtn.addEventListener('click', () => {
+        html2canvas(tryonArea).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'tryon_result.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Welcome, {{ user.username }}! 👋</h2>
+    <hr>
+
+    <!-- Photo Upload + Clothing Selection -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-dark text-white">
+            Upload a Photo & Try-On Clothes
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Photo Upload -->
+                <div class="form-group mb-3">
+                    {{ form.photo.label_tag }}
+                    {{ form.photo }}
+                </div>
+
+                <!-- Clothing Selector -->
+                <div class="form-group mb-3">
+                    <label for="clothing" class="form-label">Choose Clothing</label>
+                    {% if clothing_items %}
+                        <select name="clothing" id="clothing" class="form-control" required>
+                            <option value="">---------</option>
+                            {% for item in clothing_items %}
+                                <option value="{{ item.id }}">{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <p class="text-danger">No clothing items available. Please add some in the admin panel.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary mt-2">
+                    Upload & Try-On
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories List -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-info text-white">
+            Browse by Category
+        </div>
+        <div class="card-body">
+            {% if categories %}
+                <ul class="list-inline">
+                    {% for category in categories %}
+                        <li class="list-inline-item mb-2">
+                            <a href="?category={{ category.id }}" class="btn btn-outline-primary btn-sm">
+                                {{ category.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No categories available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Uploaded Photos -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-secondary text-white">
+            Your Uploaded Photos
+        </div>
+        <div class="card-body">
+            {% if user_photos %}
+                <div class="row">
+                    {% for photo in user_photos %}
+                        <div class="col-md-3 mb-3 text-center">
+                            <img src="{{ photo.photo.url }}" class="img-thumbnail" alt="User Photo" style="max-height: 200px;">
+                            <small class="d-block text-muted">
+                                Uploaded: {{ photo.uploaded_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You haven’t uploaded any photos yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Try-On History -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-success text-white">
+            Try-On History
+        </div>
+        <div class="card-body">
+            {% if tryon_history %}
+                <div class="row">
+                    {% for tryon in tryon_history %}
+                        <div class="col-md-4 mb-4 text-center">
+                            <p><strong>Uploaded Photo</strong></p>
+                            <img src="{{ tryon.user_photo.photo.url }}" class="img-thumbnail mb-2" alt="User Photo" style="max-height: 180px;">
+                            <p><strong>Try-On Result</strong></p>
+                            {% if tryon.result_image %}
+                                <img src="{{ tryon.result_image.url }}" class="img-thumbnail mb-2" alt="Try-On Result" style="max-height: 180px;">
+                            {% else %}
+                                <p class="text-muted">No try-on result available yet.</p>
+                            {% endif %}
+
+                            <small class="d-block text-muted">
+                                Tried on: {{ tryon.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No try-on history yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% comment %} {% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Welcome, {{ user.username }}! 👋</h2>
+    <hr>
+
+    <!-- Photo Upload + Clothing Selection -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-dark text-white">
+            Upload a Photo & Try-On Clothes
+        </div>
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    {{ form.photo.label_tag }}
+                    {{ form.photo }}
+                </div>
+
+                <!-- Clothing Selector -->
+                <div class="form-group mb-3">
+                    <label for="clothing">Choose Clothing</label>
+                    <select name="clothing" id="clothing" class="form-control" required>
+                        <option value="">---------</option>
+                        {% for item in clothing_items %}
+                            <option value="{{ item.id }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if clothing_items %}
+                    <select name="clothing" id="clothing" class="form-control" required>
+                        <option value="">---------</option>
+                        {% for item in clothing_items %}
+                            <option value="{{ item.id }}">{{ item.name }}</option>
+                        {% endfor %}
+                    </select>
+                        {% else %}
+                            <p style="color:red;">No clothing items available. Please add some in the admin panel.</p>
+                        {% endif %}
+
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">
+                    Upload & Try-On
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Categories List -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-info text-white">
+            Browse by Category
+        </div>
+        <div class="card-body">
+            {% if categories %}
+                <ul class="list-inline">
+                    {% for category in categories %}
+                        <li class="list-inline-item mb-2">
+                            <a href="?category={{ category.id }}" class="btn btn-outline-primary btn-sm">
+                                {{ category.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">No categories available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Uploaded Photos -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-secondary text-white">
+            Your Uploaded Photos
+        </div>
+        <div class="card-body">
+            {% if photos %}
+                <div class="row">
+                    {% for photo in photos %}
+                        <div class="col-md-3 mb-3 text-center">
+                            <img src="{{ photo.photo.url }}" class="img-thumbnail" alt="User Photo" style="max-height: 200px;">
+                            <small class="d-block text-muted">
+                                Uploaded: {{ photo.uploaded_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">You haven’t uploaded any photos yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Try-On History -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-success text-white">
+            Try-On History
+        </div>
+        <div class="card-body">
+            {% if tryon_history %}
+                <div class="row">
+                    {% for tryon in tryon_history %}
+                        <div class="col-md-4 mb-4 text-center">
+                            <p><strong>Uploaded Photo</strong></p>
+                            <img src="{{ tryon.user_photo.photo.url }}" class="img-thumbnail mb-2" alt="User Photo" style="max-height: 180px;">
+                            <p><strong>Try-On Result</strong></p>
+                            <img src="{{ tryon.result_image.url }}" class="img-thumbnail mb-2" alt="Try-On Result" style="max-height: 180px;">
+                            <small class="d-block text-muted">
+                                Tried on: {{ tryon.created_at|date:"M d, Y H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No try-on history yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} {% endcomment %}

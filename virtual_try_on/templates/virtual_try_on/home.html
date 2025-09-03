@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center">👗 Welcome to Virtual Designer</h1>
+    <p class="text-center">Try on clothes virtually before you buy!</p>
+
+    <hr>
+
+    <!-- Categories -->
+    <h3>Categories</h3>
+    <div class="row">
+        {% for category in categories %}
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                {% if category.image %}
+                    <img src="{{ category.image.url }}" class="card-img-top" alt="{{ category.name }}">
+                {% else %}
+                    <img src="{% static 'images/default_category.jpg' %}" class="card-img-top" alt="No Image">
+                {% endif %}
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ category.name }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Clothes -->
+    <h3 class="mt-5">Available Clothes</h3>
+    <div class="row">
+        {% for cloth in clothes %}
+        <div class="col-md-3 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ cloth.image.url }}" class="card-img-top" alt="{{ cloth.name }}">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ cloth.name }}</h5>
+                    <p class="card-text">Price: ${{ cloth.price }}</p>
+                    <a href="{% url 'try_on' cloth.id %}" class="btn btn-primary">👗 Try On</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No clothes available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
