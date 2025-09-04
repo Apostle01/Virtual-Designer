@@ -1,11 +1,17 @@
-# Virtual environment
+# Ignore Python virtual environment
 venv/
 
-# Python cache
+# Ignore Python cache
 __pycache__/
 *.pyc
 *.pyo
 
-# OS files
-.DS_Store
-Thumbs.db
+# Ignore big DLL files
+*.dll
+
+# Ignore IDE settings
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
